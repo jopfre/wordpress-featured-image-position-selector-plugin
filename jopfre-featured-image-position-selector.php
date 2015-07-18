@@ -1,9 +1,4 @@
 <?php
-/**
- * @package jopfre_featured_image_position_selector
- * @version 1.0
- */
-
 /*
 Plugin Name: jopfre featured image postion selector 
 Plugin URI:
