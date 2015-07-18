@@ -26,7 +26,7 @@ add_action( 'save_post', 'jopfre_featured_image_position_save' );
 function jopfre_replace_featured_image_metabox() {
   //remove original featured image metabox
   remove_meta_box( 'postimagediv', 'page', 'side' );
-  //add our customized metabox
+  //add custom featured image metabox
   add_meta_box( 'postimagediv', 'Featured Image', 'jopfre_post_thumbnail_meta_box', 'page', 'side', 'low' );
 }
 
@@ -37,7 +37,7 @@ function jopfre_post_thumbnail_meta_box( $post ) {
   echo _wp_post_thumbnail_html( $thumbnail_id, $post->ID );
 
   //use nonce for verification
-  wp_nonce_field( basename( __FILE__ ), 'jopfre_featured_image_position_nonce' );
+  wp_nonce_field( 'jopfre_save_featured_image_position', 'jopfre_featured_image_position_nonce' );
 
   // get current value
   $dropdown_value = get_post_meta( $post->ID, 'jopfre_featured_image_position', true );
@@ -53,12 +53,12 @@ function jopfre_post_thumbnail_meta_box( $post ) {
 
 //dropdown saving
 function jopfre_featured_image_position_save( $post_id ) { //post_id is automatically passed when using adding actions to 'save_post'
-  //if doing autosave don't do nothing
+  //if autosaving do nothing
   if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
     return;
   }
   //verify nonce
-  if ( !wp_verify_nonce( $_POST['jopfre_featured_image_position_nonce'], basename( __FILE__ ) ) ) {
+  if ( !wp_verify_nonce( $_POST['jopfre_featured_image_position_nonce'], 'jopfre_save_featured_image_position' ) ) {
     return;
   }
   //check permissions
@@ -76,6 +76,7 @@ function jopfre_featured_image_position_save( $post_id ) { //post_id is automati
   update_post_meta( $post_id, 'jopfre_featured_image_position', $new_value );
 }
 
+//echos the featured image positon. for use in templates
 function the_featured_image_position() {
    $post = get_post();
 
@@ -85,7 +86,8 @@ function the_featured_image_position() {
     return;
    }
 }
-//optional helper function
+
+//echos the featured image url. for use in templates
 function the_featured_image_url() {
   echo wp_get_attachment_url( get_post_thumbnail_id($post->ID) );
 }
